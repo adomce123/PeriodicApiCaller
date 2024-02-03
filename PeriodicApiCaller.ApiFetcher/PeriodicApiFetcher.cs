@@ -1,33 +1,37 @@
-﻿namespace PeriodicApiCaller.ApiFetcher
+﻿using Microsoft.Extensions.Logging;
+
+namespace PeriodicApiCaller.ApiFetcher
 {
     public class PeriodicApiFetcher : IPeriodicApiFetcher, IDisposable
     {
         private readonly IApiService _apiService;
+        private readonly ILogger<PeriodicApiFetcher> _logger;
         private Timer? _timer;
         private bool _disposed = false;
         private const int _interval = 15;
 
-        public PeriodicApiFetcher(IApiService apiService)
+        public PeriodicApiFetcher(IApiService apiService, ILogger<PeriodicApiFetcher> logger)
         {
             _apiService = apiService;
+            _logger = logger;
         }
 
-        public Task StartFetching()
+        public async Task StartFetching(string city)
         {
             _timer = new Timer(async _ =>
             {
                 try
                 {
-                    var result = await _apiService.FetchDataAsync();
-                    await Console.Out.WriteLineAsync($"Fetched: {result}");
+                    var result = await _apiService.GetCityWeather(city);
+                    _logger.LogInformation($"Fetched: {result}");
                 }
                 catch (Exception ex)
                 {
-                    // Handle exceptions
+                    _logger.LogError(ex, "Failure in Periodic Fetcher");
                 }
             }, null, TimeSpan.Zero, TimeSpan.FromSeconds(_interval));
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         public void StopFetching()

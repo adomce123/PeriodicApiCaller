@@ -2,7 +2,7 @@
 {
     public interface IPeriodicApiFetcher
     {
-        Task StartFetching();
+        Task StartFetching(string city);
         void StopFetching();
     }
 }

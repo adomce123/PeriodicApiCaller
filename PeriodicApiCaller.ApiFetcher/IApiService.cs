@@ -2,6 +2,7 @@
 {
     public interface IApiService
     {
-        Task<string> FetchDataAsync();
+        Task<string> GetAllCities();
+        Task<string> GetCityWeather(string city);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace PeriodicApiCaller.ApiFetcher.JsonPolicies
+namespace PeriodicApiCaller.ApiFetcher.Models.SerializerPolicies
 {
     internal class LowerCaseNamingPolicy : JsonNamingPolicy
     {

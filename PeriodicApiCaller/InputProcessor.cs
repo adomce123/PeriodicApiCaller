@@ -1,21 +1,38 @@
-﻿using PeriodicApiCaller.ApiFetcher;
+﻿using PeriodicApiCaller.Core;
 
 namespace PeriodicApiCaller
 {
     internal class InputProcessor : IInputProcessor
     {
-        private readonly IPeriodicApiFetcher _periodicApiFetcher;
+        private readonly IWeatherDataOrchestrator _weatherDataOrchestrator;
+        private readonly ICityValidatorService _cityValidatorService;
 
-        public InputProcessor(IPeriodicApiFetcher periodicApiFetcher)
+        public InputProcessor(
+            IWeatherDataOrchestrator weatherDataOrchestrator,
+            ICityValidatorService cityValidatorService)
         {
-            _periodicApiFetcher = periodicApiFetcher;
+            _weatherDataOrchestrator = weatherDataOrchestrator;
+            _cityValidatorService = cityValidatorService;
         }
 
         public async Task ReadInput()
         {
-            await _periodicApiFetcher.StartFetching();
+            var inputCities = new List<string>
+            {
+                "Vienna",
+                "Vilnius",
+                "N'Djamena",
+                "Stockholm",
+                "Kaunas"
+            };
 
-            Console.WriteLine("Press any key to exit...");
+            var validatedCities = await _cityValidatorService.ValidateCities(inputCities);
+
+            if (validatedCities.Any())
+            {
+                await _weatherDataOrchestrator.Orchestrate(validatedCities);
+
+            }
             Console.ReadKey();
         }
     }
