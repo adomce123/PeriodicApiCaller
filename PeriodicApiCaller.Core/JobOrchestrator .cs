@@ -35,20 +35,27 @@ public class JobOrchestrator : IJobOrchestrator
             _fetchingTasks.Add(task);
         }
 
-        await Task.WhenAll(_fetchingTasks);
+        try
+        {
+            await Task.WhenAll(_fetchingTasks);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Data fetching was canceled.");
+        }
     }
 
     private async Task StartFetchingForCity(string city, CancellationToken cts)
     {
-        while (!cts.IsCancellationRequested)
+        try
         {
-            using (var scope = _scopeFactory.CreateScope())
+            while (!cts.IsCancellationRequested)
             {
-                var apiService = scope.ServiceProvider.GetRequiredService<IApiService>();
-                var repository = scope.ServiceProvider.GetRequiredService<IWeatherInfoRepository>();
-
-                try
+                using (var scope = _scopeFactory.CreateScope())
                 {
+                    var apiService = scope.ServiceProvider.GetRequiredService<IApiService>();
+                    var repository = scope.ServiceProvider.GetRequiredService<IWeatherInfoRepository>();
+
                     var result = await apiService.GetCityWeather(city);
 
                     await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
@@ -57,13 +64,13 @@ public class JobOrchestrator : IJobOrchestrator
                         $"City: {result.City}, Temperature: {result.Temperature}, " +
                         $"Precipitation: {result.Precipitation}, WindSpeed: {result.WindSpeed}");
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Error starting job for {city}.");
-                }
-            }
 
-            await Task.Delay(TimeSpan.FromSeconds(FetchInterval), cts);
+                await Task.Delay(TimeSpan.FromSeconds(FetchInterval), cts);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation($"Fetching for city {city} was canceled.");
         }
     }
 }

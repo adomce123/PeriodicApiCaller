@@ -3,9 +3,9 @@ using PeriodicApiCaller.Persistence.Entities;
 
 namespace PeriodicApiCaller.Core.Extensions
 {
-    internal static class WeatherInfoExtensions
+    public static class WeatherInfoExtensions
     {
-        internal static WeatherInfo ToEntity(this WeatherInfoDto dto)
+        public static WeatherInfo ToEntity(this WeatherInfoDto dto)
         {
             return new WeatherInfo
             {

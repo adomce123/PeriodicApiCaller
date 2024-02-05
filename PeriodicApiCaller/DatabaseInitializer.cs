@@ -5,7 +5,7 @@ using PeriodicApiCaller.Persistence;
 
 namespace PeriodicApiCaller;
 
-public class DatabaseInitializer
+public static class DatabaseInitializer
 {
     public static void Initialize(IServiceProvider serviceProvider)
     {
@@ -13,7 +13,7 @@ public class DatabaseInitializer
         {
             var services = scope.ServiceProvider;
             var dbContext = services.GetRequiredService<WeatherInfoDbContext>();
-            var logger = services.GetRequiredService<ILogger<DatabaseInitializer>>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
 
             try
             {
