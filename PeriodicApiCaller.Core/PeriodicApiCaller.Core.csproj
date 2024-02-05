@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PeriodicApiCaller.ApiFetcher\PeriodicApiCaller.ApiFetcher.csproj" />
+    <ProjectReference Include="..\PeriodicApiCaller.Persistence\PeriodicApiCaller.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

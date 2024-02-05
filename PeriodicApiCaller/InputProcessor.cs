@@ -1,39 +1,46 @@
-﻿using PeriodicApiCaller.Core;
+﻿using CommandLine;
+using PeriodicApiCaller.Core.Interfaces;
+using PeriodicApiCaller.Interfaces;
 
 namespace PeriodicApiCaller
 {
     internal class InputProcessor : IInputProcessor
     {
-        private readonly IWeatherDataOrchestrator _weatherDataOrchestrator;
+        private readonly IJobOrchestrator _jobOrchestrator;
         private readonly ICityValidatorService _cityValidatorService;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         public InputProcessor(
-            IWeatherDataOrchestrator weatherDataOrchestrator,
+            IJobOrchestrator jobOrchestrator,
             ICityValidatorService cityValidatorService)
         {
-            _weatherDataOrchestrator = weatherDataOrchestrator;
+            _jobOrchestrator = jobOrchestrator;
             _cityValidatorService = cityValidatorService;
+
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                Console.WriteLine("Cancellation requested. Stopping...");
+                _cts.Cancel();
+                e.Cancel = true; // Prevent the process from terminating immediately.
+            };
         }
 
-        public async Task ReadInput()
+        public async Task ReadInput(string[] args)
         {
-            var inputCities = new List<string>
-            {
-                "Vienna",
-                "Vilnius",
-                "N'Djamena",
-                "Stockholm",
-                "Kaunas"
-            };
+            var parserResult = Parser.Default.ParseArguments<InputOptions>(args);
+            IEnumerable<string> cities = Enumerable.Empty<string>();
 
-            var validatedCities = await _cityValidatorService.ValidateCities(inputCities);
+            parserResult.WithParsed(options =>
+            {
+                cities = options.Cities.Select(city => city.Trim());
+            });
+
+            var validatedCities = await _cityValidatorService.ValidateCities(cities);
 
             if (validatedCities.Any())
             {
-                await _weatherDataOrchestrator.Orchestrate(validatedCities);
-
+                await _jobOrchestrator.StartFetchingForCities(validatedCities, _cts.Token);
             }
-            Console.ReadKey();
         }
     }
 }

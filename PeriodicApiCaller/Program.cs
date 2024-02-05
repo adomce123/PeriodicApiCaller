@@ -1,11 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PeriodicApiCaller;
 using PeriodicApiCaller.ApiFetcher;
+using PeriodicApiCaller.ApiFetcher.Interfaces;
 using PeriodicApiCaller.Configuration;
 using PeriodicApiCaller.Core;
+using PeriodicApiCaller.Core.Interfaces;
+using PeriodicApiCaller.Interfaces;
+using PeriodicApiCaller.Persistence;
+using PeriodicApiCaller.Persistence.Repositories;
+using PeriodicApiCaller.Persistence.Repositories.Interfaces;
 
 var configuration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -15,25 +21,24 @@ var configuration = new ConfigurationBuilder()
 using IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        //Singleton ?
-        services.AddSingleton<IInputProcessor, InputProcessor>();
-        services.AddSingleton<IPeriodicApiFetcher, PeriodicApiFetcher>();
-        services.AddSingleton<IApiService, ApiService>();
-        services.AddSingleton<ICityValidatorService, CityValidatorService>();
-        services.AddSingleton<IWeatherDataOrchestrator, WeatherDataOrchestrator>();
-        services.AddHttpClient();
-
         services.Configure<ApiServiceSettings>(configuration.GetSection("ApiServiceSettings"));
-    })
-    .ConfigureLogging(logging =>
-    {
-        logging.ClearProviders();
-        logging.AddConsole();
-        logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
-    })
-    .Build();
+
+        services.AddDbContext<WeatherInfoDbContext>(options =>
+            options.UseSqlServer(context.Configuration.GetConnectionString("WeatherInfoDb")));
+
+        services.AddScoped<IInputProcessor, InputProcessor>();
+        services.AddScoped<IApiService, ApiService>();
+        services.AddScoped<IApiFetcher, ApiFetcher>();
+        services.AddHttpClient();
+        services.AddScoped<ICityValidatorService, CityValidatorService>();
+        services.AddScoped<IWeatherInfoRepository, WeatherInfoRepository>();
+
+        services.AddSingleton<IAuthTokenService, AuthTokenService>();
+        services.AddSingleton<IJobOrchestrator, JobOrchestrator>();
+
+    }).Build();
 
 var inputProcessor = host.Services.GetRequiredService<IInputProcessor>();
 
-await inputProcessor.ReadInput();
+await inputProcessor.ReadInput(args);
 

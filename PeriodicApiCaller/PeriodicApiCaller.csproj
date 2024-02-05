@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PeriodicApiCaller.Core\PeriodicApiCaller.Core.csproj" />
+    <ProjectReference Include="..\PeriodicApiCaller.Persistence\PeriodicApiCaller.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using PeriodicApiCaller.ApiFetcher;
+using PeriodicApiCaller.ApiFetcher.Interfaces;
+using PeriodicApiCaller.Core.Interfaces;
 
 namespace PeriodicApiCaller.Core
 {
@@ -14,9 +15,10 @@ namespace PeriodicApiCaller.Core
             _logger = logger;
         }
 
-        public async Task<IEnumerable<string>> ValidateCities(IList<string> cities)
+        public async Task<IEnumerable<string>> ValidateCities(IEnumerable<string> cities)
         {
             var availableCities = await _apiService.GetAllCities();
+
             var validCities = new List<string>();
 
             foreach (var city in cities)
