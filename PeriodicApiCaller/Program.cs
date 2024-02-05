@@ -38,6 +38,9 @@ using IHost host = Host.CreateDefaultBuilder(args)
 
     }).Build();
 
+// Automatically apply pending migrations
+DatabaseInitializer.Initialize(host.Services);
+
 var inputProcessor = host.Services.GetRequiredService<IInputProcessor>();
 
 await inputProcessor.ReadInput(args);
