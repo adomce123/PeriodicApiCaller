@@ -25,9 +25,9 @@ public class AuthTokenService : IAuthTokenService
         _logger = logger;
     }
 
-    public async Task<string> GetToken()
+    public async Task<string> GetToken(bool refreshToken = false)
     {
-        if (_token == null)
+        if (_token == null || refreshToken)
         {
             _token = await RetrieveAuthToken();
         }

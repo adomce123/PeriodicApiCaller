@@ -2,6 +2,6 @@
 {
     public interface IAuthTokenService
     {
-        Task<string> GetToken();
+        Task<string> GetToken(bool refreshToken = false);
     }
 }

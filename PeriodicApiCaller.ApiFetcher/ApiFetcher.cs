@@ -34,7 +34,7 @@ namespace PeriodicApiCaller.ApiFetcher
             {
                 _logger.LogError($"Failed to authenticate, trying to refresh token");
 
-                _currentToken = await _authTokenService.GetToken();
+                _currentToken = await _authTokenService.GetToken(true);
                 return await FetchWeatherData(url);
             }
         }
