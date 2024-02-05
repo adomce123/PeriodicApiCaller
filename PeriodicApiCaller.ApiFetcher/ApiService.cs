@@ -22,10 +22,10 @@ namespace PeriodicApiCaller.ApiFetcher
         {
             var url = _configuration.BaseUrl + _configuration.CitiesEndpoint;
 
-            var response = await _apiFetcher.AttemptFetchWeatherData(url);
+            await using var responseStream = await _apiFetcher.AttemptFetchWeatherData(url);
 
-            var cities = JsonSerializer
-                .Deserialize<IEnumerable<string>>(response, JsonSerializerSettings.CaseInsensitive)
+            var cities = await JsonSerializer
+                .DeserializeAsync<IEnumerable<string>>(responseStream, JsonSerializerSettings.CaseInsensitive)
                 ?? throw new FormatException(
                     "Was not able to deserialize response to list of cities");
 
@@ -36,10 +36,10 @@ namespace PeriodicApiCaller.ApiFetcher
         {
             var url = _configuration.BaseUrl + _configuration.CityWeatherEndpoint + $"/{city}";
 
-            var response = await _apiFetcher.AttemptFetchWeatherData(url);
+            await using var responseStream = await _apiFetcher.AttemptFetchWeatherData(url);
 
-            var weatherInfoDto = JsonSerializer
-                .Deserialize<WeatherInfoDto>(response, JsonSerializerSettings.CaseInsensitive)
+            var weatherInfoDto = await JsonSerializer
+                .DeserializeAsync<WeatherInfoDto>(responseStream, JsonSerializerSettings.CaseInsensitive)
                 ?? throw new FormatException(
                     $"Was not able to deserialize response to {typeof(WeatherInfoDto)}");
 

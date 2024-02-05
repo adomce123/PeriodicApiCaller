@@ -2,6 +2,6 @@
 {
     public interface IApiFetcher
     {
-        Task<string> AttemptFetchWeatherData(string url);
+        Task<Stream> AttemptFetchWeatherData(string url);
     }
 }

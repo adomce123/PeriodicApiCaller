@@ -27,10 +27,10 @@ using IHost host = Host.CreateDefaultBuilder(args)
             options.UseSqlServer(context.Configuration.GetConnectionString("WeatherInfoDb")));
 
         services.AddScoped<IInputProcessor, InputProcessor>();
+        services.AddScoped<ICityValidatorService, CityValidatorService>();
         services.AddScoped<IApiService, ApiService>();
         services.AddScoped<IApiFetcher, ApiFetcher>();
         services.AddHttpClient();
-        services.AddScoped<ICityValidatorService, CityValidatorService>();
         services.AddScoped<IWeatherInfoRepository, WeatherInfoRepository>();
 
         services.AddSingleton<IAuthTokenService, AuthTokenService>();

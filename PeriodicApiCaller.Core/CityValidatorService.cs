@@ -17,6 +17,8 @@ namespace PeriodicApiCaller.Core
 
         public async Task<IEnumerable<string>> ValidateCities(IEnumerable<string> cities)
         {
+            _logger.LogInformation($"Fetching available cities..");
+
             var availableCities = await _apiService.GetAllCities();
 
             var validCities = new List<string>();

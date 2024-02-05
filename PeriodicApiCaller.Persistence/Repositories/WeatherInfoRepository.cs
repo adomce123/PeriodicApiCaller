@@ -12,10 +12,10 @@ namespace PeriodicApiCaller.Persistence.Repositories
             _context = context;
         }
 
-        public async Task SaveWeatherInfoAsync(WeatherInfo weatherInfo)
+        public async Task SaveWeatherInfoAsync(WeatherInfo weatherInfo, CancellationToken cts)
         {
             _context.WeatherInfos.Add(weatherInfo);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cts);
         }
     }
 }

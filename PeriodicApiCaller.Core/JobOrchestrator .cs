@@ -25,7 +25,7 @@ public class JobOrchestrator : IJobOrchestrator
 
     public async Task StartFetchingForCities(IEnumerable<string> cities, CancellationToken cts)
     {
-        _logger.LogInformation($"Starting....");
+        _logger.LogInformation($"Starting data fetching..");
 
         _fetchingTasks.Clear();
 
@@ -51,9 +51,11 @@ public class JobOrchestrator : IJobOrchestrator
                 {
                     var result = await apiService.GetCityWeather(city);
 
-                    await repository.SaveWeatherInfoAsync(result.ToEntity());
+                    await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
 
-                    _logger.LogInformation($"Fetched and saved data for: {result.City}.");
+                    _logger.LogInformation($"Fetched and saved weather data - " +
+                        $"City: {result.City}, Temperature: {result.Temperature}, " +
+                        $"Precipitation: {result.Precipitation}, WindSpeed: {result.WindSpeed}");
                 }
                 catch (Exception ex)
                 {

@@ -74,6 +74,8 @@ public class AuthTokenService : IAuthTokenService
         _token = tokenResponse?.Token ??
             throw new UnauthorizedAccessException("Failed to retrieve authentication token");
 
+        _logger.LogInformation("Authentication token retrieved");
+
         return _token;
     }
 }

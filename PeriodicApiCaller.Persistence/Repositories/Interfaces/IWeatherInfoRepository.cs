@@ -4,6 +4,6 @@ namespace PeriodicApiCaller.Persistence.Repositories.Interfaces
 {
     public interface IWeatherInfoRepository
     {
-        Task SaveWeatherInfoAsync(WeatherInfo weatherInfo);
+        Task SaveWeatherInfoAsync(WeatherInfo weatherInfo, CancellationToken cts);
     }
 }

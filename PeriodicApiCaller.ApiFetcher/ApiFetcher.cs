@@ -22,7 +22,7 @@ namespace PeriodicApiCaller.ApiFetcher
             _logger = logger;
         }
 
-        public async Task<string> AttemptFetchWeatherData(string url)
+        public async Task<Stream> AttemptFetchWeatherData(string url)
         {
             _currentToken = await _authTokenService.GetToken();
 
@@ -39,7 +39,7 @@ namespace PeriodicApiCaller.ApiFetcher
             }
         }
 
-        private async Task<string> FetchWeatherData(string url)
+        private async Task<Stream> FetchWeatherData(string url)
         {
             var client = _httpClientFactory.CreateClient();
 
@@ -49,7 +49,7 @@ namespace PeriodicApiCaller.ApiFetcher
             var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
-            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseBody = await response.Content.ReadAsStreamAsync();
             return responseBody;
         }
     }
