@@ -12,10 +12,7 @@ public class WeatherInfoExtensionsTests
         var dto = new WeatherInfoDto
         {
             City = "TestCity",
-            Temperature = 25.5,
-            Precipitation = 10.2,
-            WindSpeed = 5.5,
-            Summary = "Sunny"
+            TemperatureC = 25.5m
         };
 
         // Act
@@ -23,10 +20,7 @@ public class WeatherInfoExtensionsTests
 
         // Assert
         Assert.Equal(dto.City, entity.City);
-        Assert.Equal(dto.Temperature, entity.Temperature);
-        Assert.Equal(dto.Precipitation, entity.Precipitation);
-        Assert.Equal(dto.WindSpeed, entity.WindSpeed);
-        Assert.Equal(dto.Summary, entity.Summary);
+        Assert.Equal(dto.TemperatureC, entity.TemperatureC);
 
         var utcNow = DateTime.UtcNow;
         Assert.True((utcNow - entity.Inserted).TotalSeconds < 1);

@@ -10,10 +10,7 @@ namespace PeriodicApiCaller.Core.Extensions
             return new WeatherInfo
             {
                 City = dto.City,
-                Temperature = dto.Temperature,
-                Precipitation = dto.Precipitation,
-                WindSpeed = dto.WindSpeed,
-                Summary = dto.Summary,
+                TemperatureC = dto.TemperatureC,
                 Inserted = DateTime.UtcNow
             };
         }

@@ -61,8 +61,7 @@ public class JobOrchestrator : IJobOrchestrator
                     await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
 
                     _logger.LogInformation($"Fetched and saved weather data - " +
-                        $"City: {result.City}, Temperature: {result.Temperature}, " +
-                        $"Precipitation: {result.Precipitation}, WindSpeed: {result.WindSpeed}");
+                        $"City: {result.City}, Temperature: {result.TemperatureC}");
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(FetchInterval), cts);

@@ -13,6 +13,10 @@ namespace PeriodicApiCaller.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WeatherInfo>().ToTable("WeatherInfo");
+
+            modelBuilder.Entity<WeatherInfo>()
+                .Property(w => w.TemperatureC)
+                .HasColumnType("decimal(7, 2)");
         }
     }
 }

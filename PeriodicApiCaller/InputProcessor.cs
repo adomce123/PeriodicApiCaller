@@ -35,6 +35,8 @@ namespace PeriodicApiCaller
                 cities = options.Cities.Select(city => city.Trim());
             });
 
+            cities = new[] { "Vilnius", "Lala", "Kaunas" };
+
             var validatedCities = await _cityValidatorService.ValidateCities(cities);
 
             if (validatedCities.Any())

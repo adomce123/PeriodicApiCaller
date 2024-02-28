@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeriodicApiCaller.Persistence;
 
@@ -11,9 +12,11 @@ using PeriodicApiCaller.Persistence;
 namespace PeriodicApiCaller.Persistence.Migrations
 {
     [DbContext(typeof(WeatherInfoDbContext))]
-    partial class WeatherInfoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240228065044_RemoveSomeWeatherInfoFields")]
+    partial class RemoveSomeWeatherInfoFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +40,7 @@ namespace PeriodicApiCaller.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("TemperatureC")
-                        .HasColumnType("decimal(7, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

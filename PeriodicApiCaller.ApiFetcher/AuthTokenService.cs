@@ -65,7 +65,7 @@ public class AuthTokenService : IAuthTokenService
             _logger.LogError($"Failed to authenticate: {ex.Message}");
         }
 
-        var responseStream = await response.Content.ReadAsStreamAsync();
+        await using var responseStream = await response.Content.ReadAsStreamAsync();
 
         var tokenResponse = await JsonSerializer
             .DeserializeAsync<TokenResponse>(
