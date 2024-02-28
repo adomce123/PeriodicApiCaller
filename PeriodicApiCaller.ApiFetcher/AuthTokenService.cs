@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using PeriodicApiCaller.ApiFetcher.Interfaces;
 using PeriodicApiCaller.ApiFetcher.Models.SerializerPolicies;
 using PeriodicApiCaller.Configuration;
-using System.Text;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace PeriodicApiCaller.ApiFetcher;
@@ -34,7 +34,7 @@ public class AuthTokenService : IAuthTokenService
         return _token;
     }
 
-    private StringContent BuildContentForRequest()
+    private async Task<HttpContent> BuildContentForRequest()
     {
         var credentials = new
         {
@@ -42,14 +42,19 @@ public class AuthTokenService : IAuthTokenService
             password = _configuration.Password
         };
 
-        return new StringContent(
-            JsonSerializer.Serialize(credentials), Encoding.UTF8, "application/json");
+        var memoryStream = new MemoryStream();
+        await JsonSerializer.SerializeAsync(memoryStream, credentials);
+        memoryStream.Seek(0, SeekOrigin.Begin); // Reset stream position to the beginning
+
+        var httpContent = new StreamContent(memoryStream);
+        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        return httpContent;
     }
 
     private async Task<string> RetrieveAuthToken()
     {
         var client = _httpClientFactory.CreateClient();
-        var content = BuildContentForRequest();
+        var content = await BuildContentForRequest();
 
         var response = new HttpResponseMessage();
 
