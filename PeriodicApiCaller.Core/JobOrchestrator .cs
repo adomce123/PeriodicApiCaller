@@ -51,17 +51,32 @@ public class JobOrchestrator : IJobOrchestrator
         {
             while (!cts.IsCancellationRequested)
             {
-                using (var scope = _scopeFactory.CreateScope())
+                try
                 {
-                    var apiService = scope.ServiceProvider.GetRequiredService<IApiService>();
-                    var repository = scope.ServiceProvider.GetRequiredService<IWeatherInfoRepository>();
+                    using (var scope = _scopeFactory.CreateScope())
+                    {
+                        var apiService = scope.ServiceProvider.GetRequiredService<IApiService>();
+                        var repository = scope.ServiceProvider.GetRequiredService<IWeatherInfoRepository>();
 
-                    var result = await apiService.GetCityWeather(city);
+                        try
+                        {
+                            var result = await apiService.GetCityWeather(city);
+                            await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
 
-                    await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
-
-                    _logger.LogInformation($"Fetched and saved weather data - " +
-                        $"City: {result.City}, Temperature: {result.TemperatureC}");
+                            _logger.LogInformation($"Fetched and saved weather data - City: {result.City}, " +
+                                $"Temperature: {result.TemperatureC}");
+                        }
+                        catch (Exception apiException)
+                        {
+                            _logger.LogError($"Error fetching data for city {city}: {apiException.Message}. " +
+                                $"Retrying in {FetchInterval} seconds.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Unexpected error: {ex.Message}");
+                    // Handle unexpected errors (e.g., issues creating the scope)
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(FetchInterval), cts);
