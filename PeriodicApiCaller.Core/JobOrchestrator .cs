@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PeriodicApiCaller.ApiFetcher.Interfaces;
 using PeriodicApiCaller.Core.Extensions;
@@ -7,32 +8,33 @@ using PeriodicApiCaller.Persistence.Repositories.Interfaces;
 
 namespace PeriodicApiCaller.Core;
 
-public class JobOrchestrator : IJobOrchestrator
+public class JobOrchestrator : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<JobOrchestrator> _logger;
+    private readonly IValidatedCitiesProvider _validatedCitiesProvider;
     private readonly List<Task> _fetchingTasks;
     private const int FetchInterval = 15;
 
     public JobOrchestrator(
         IServiceScopeFactory scopeFactory,
-        ILogger<JobOrchestrator> logger)
+        ILogger<JobOrchestrator> logger,
+        IValidatedCitiesProvider validatedCitiesProvider)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _validatedCitiesProvider = validatedCitiesProvider;
         _fetchingTasks = new List<Task>();
     }
 
-    public async Task StartFetchingForCities(IEnumerable<string> cities, CancellationToken cts)
+    public async Task StartFetching(IEnumerable<string> cities, CancellationToken stoppingToken)
     {
-        _logger.LogInformation($"Starting data fetching..");
+        _logger.LogInformation("Starting data fetching..");
 
-        _fetchingTasks.Clear();
-
-        foreach (var city in cities)
+        var validatedCities = await _validatedCitiesProvider.GetValidatedCitiesAsync();
+        foreach (var city in validatedCities)
         {
-            var task = StartFetchingForCity(city, cts);
-            _fetchingTasks.Add(task);
+            _fetchingTasks.Add(StartFetchingForCity(city, stoppingToken));
         }
 
         try
@@ -45,11 +47,11 @@ public class JobOrchestrator : IJobOrchestrator
         }
     }
 
-    private async Task StartFetchingForCity(string city, CancellationToken cts)
+    private async Task StartFetchingForCity(string city, CancellationToken stoppingToken)
     {
         try
         {
-            while (!cts.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
@@ -58,13 +60,13 @@ public class JobOrchestrator : IJobOrchestrator
 
                     var result = await apiService.GetCityWeather(city);
 
-                    await repository.SaveWeatherInfoAsync(result.ToEntity(), cts);
+                    await repository.SaveWeatherInfoAsync(result.ToEntity(), stoppingToken);
 
                     _logger.LogInformation($"Fetched and saved weather data - " +
                         $"City: {result.City}, Temperature: {result.TemperatureC}");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(FetchInterval), cts);
+                await Task.Delay(TimeSpan.FromSeconds(FetchInterval), stoppingToken);
             }
         }
         catch (OperationCanceledException)

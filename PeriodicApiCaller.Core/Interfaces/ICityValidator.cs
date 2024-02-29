@@ -1,6 +1,6 @@
 ﻿namespace PeriodicApiCaller.Core.Interfaces
 {
-    public interface ICityValidatorService
+    public interface ICityValidator
     {
         Task<IEnumerable<string>> ValidateCities(IEnumerable<string> cities);
     }

@@ -8,14 +8,14 @@ namespace PeriodicApiCaller.Tests;
 public class CityValidatorServiceTests
 {
     private readonly Mock<IApiService> _mockApiService;
-    private readonly Mock<ILogger<CityValidatorService>> _mockLogger;
-    private readonly CityValidatorService _cityValidatorService;
+    private readonly Mock<ILogger<CityValidator>> _mockLogger;
+    private readonly CityValidator _cityValidatorService;
 
     public CityValidatorServiceTests()
     {
         _mockApiService = new Mock<IApiService>();
-        _mockLogger = new Mock<ILogger<CityValidatorService>>();
-        _cityValidatorService = new CityValidatorService(_mockApiService.Object, _mockLogger.Object);
+        _mockLogger = new Mock<ILogger<CityValidator>>();
+        _cityValidatorService = new CityValidator(_mockApiService.Object, _mockLogger.Object);
     }
 
     [Fact]

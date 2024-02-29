@@ -7,12 +7,12 @@ namespace PeriodicApiCaller
     internal class InputProcessor : IInputProcessor
     {
         private readonly IJobOrchestrator _jobOrchestrator;
-        private readonly ICityValidatorService _cityValidatorService;
+        private readonly ICityValidator _cityValidatorService;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         public InputProcessor(
             IJobOrchestrator jobOrchestrator,
-            ICityValidatorService cityValidatorService)
+            ICityValidator cityValidatorService)
         {
             _jobOrchestrator = jobOrchestrator;
             _cityValidatorService = cityValidatorService;

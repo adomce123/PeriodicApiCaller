@@ -4,12 +4,12 @@ using PeriodicApiCaller.Core.Interfaces;
 
 namespace PeriodicApiCaller.Core
 {
-    public class CityValidatorService : ICityValidatorService
+    public class CityValidator : ICityValidator
     {
         private readonly IApiService _apiService;
-        private readonly ILogger<CityValidatorService> _logger;
+        private readonly ILogger<CityValidator> _logger;
 
-        public CityValidatorService(IApiService apiService, ILogger<CityValidatorService> logger)
+        public CityValidator(IApiService apiService, ILogger<CityValidator> logger)
         {
             _apiService = apiService;
             _logger = logger;

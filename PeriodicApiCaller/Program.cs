@@ -27,7 +27,7 @@ using IHost host = Host.CreateDefaultBuilder(args)
             options.UseSqlServer(context.Configuration.GetConnectionString("WeatherInfoDb")));
 
         services.AddScoped<IInputProcessor, InputProcessor>();
-        services.AddScoped<ICityValidatorService, CityValidatorService>();
+        services.AddScoped<ICityValidator, CityValidator>();
         services.AddScoped<IApiService, ApiService>();
         services.AddScoped<IApiFetcher, ApiFetcher>();
         services.AddHttpClient();
